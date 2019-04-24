@@ -3,5 +3,7 @@
     <string name="email_hint">Login</string>
     <string name="password_hint">Password</string>
     <string name="login_button_label">Login</string>
-    <string name="sign_up_text">yes</string>
+    <string name="sign_up_text">Sign Up!</string>
+    <string name="name_hint">Name</string>
+    <string name="signup_button_label">Sign Me UP</string>
 </resources>
