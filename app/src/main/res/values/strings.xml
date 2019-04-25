@@ -6,4 +6,7 @@
     <string name="sign_up_text">Sign Up!</string>
     <string name="name_hint">Name</string>
     <string name="signup_button_label">Sign Me UP</string>
+    <string name="authentication_error_title">User Authentication Error!</string>
+    <string name="empty_field_signup_error">Be sure you have entered a valid email address, password, and name.</string>
+    <string name="empty_field_login_error">Be sure you have entered a valid email address and password</string>
 </resources>
