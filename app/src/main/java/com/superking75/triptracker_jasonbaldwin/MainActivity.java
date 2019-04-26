@@ -73,33 +73,64 @@ public class MainActivity extends AppCompatActivity {
                 name = name.trim();
 
 
-                if (!userEmail.isEmpty() && !name.isEmpty() && !password.isEmpty()) {
-                    if (checkForCase(password, "upper") && checkForCase(password, "lower"), password.contains())
-                        mBackendlessUser = new BackendlessUser();
-                    mBackendlessUser.setEmail(userEmail);
-                    mBackendlessUser.setPassword(password);
-                    mBackendlessUser.setProperty("name", name);
-                    Backendless.UserService.register(mBackendlessUser, new AsyncCallback<BackendlessUser>() {
-                        @Override
-                        public void handleResponse(BackendlessUser response) {
-                            Log.i(TAG, "Registration successful for " +
-                                    mBackendlessUser.getEmail());
+                if (!userEmail.isEmpty() && !name.isEmpty() && !password.isEmpty())
+                {
+                    if (checkForCase(password))
+                    {
+                        if (userEmail.contains("@") && userEmail.contains("."))
+                        {
+                            mBackendlessUser = new BackendlessUser();
+                            mBackendlessUser.setEmail(userEmail);
+                            mBackendlessUser.setPassword(password);
+                            mBackendlessUser.setProperty("name", name);
+                            Backendless.UserService.register(mBackendlessUser, new AsyncCallback<BackendlessUser>() {
+                                @Override
+                                public void handleResponse(BackendlessUser response) {
+                                    Log.i(TAG, "Registration successful for " +
+                                            mBackendlessUser.getEmail());
+                                }
+
+                                @Override
+                                public void handleFault(BackendlessFault fault) {
+                                    Log.i(TAG, "Registration failed: " + fault.getMessage());
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                                    builder.setMessage(fault.getMessage());
+                                    builder.setTitle(R.string.authentication_error_title);
+                                    builder.setPositiveButton(android.R.string.ok, null);
+                                    AlertDialog dialog = builder.create();
+                                    dialog.show();
+
+                                }
+                            });
                         }
 
-                        @Override
-                        public void handleFault(BackendlessFault fault) {
-                            Log.i(TAG, "Registration failed: " + fault.getMessage());
+                        else
+                        {
                             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                            builder.setMessage(fault.getMessage());
+                            builder.setMessage(R.string.invalide_email_signup);
                             builder.setTitle(R.string.authentication_error_title);
                             builder.setPositiveButton(android.R.string.ok, null);
                             AlertDialog dialog = builder.create();
                             dialog.show();
+                        }
 
                         }
-                    });
 
-                } else {
+                    else
+                    {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+                        builder.setMessage(R.string.weak_password_signup);
+                        builder.setTitle(R.string.authentication_error_title);
+                        builder.setPositiveButton(android.R.string.ok, null);
+                        AlertDialog dialog = builder.create();
+                        dialog.show();
+                    }
+
+
+                }
+
+                else
+                    {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
                     builder.setMessage(R.string.empty_field_signup_error);
                     builder.setTitle(R.string.authentication_error_title);
@@ -172,32 +203,53 @@ public class MainActivity extends AppCompatActivity {
         boolean upper = false;
         boolean lower = false;
         boolean special = false;
-        boolean numer = false;
-        String[] specialCharacters = {"!", "2","#","$","%","^","&","*","(",")","?","`","~","-","+","="};
+        boolean number = false;
+        String[] specialCharacters = {"!", "2","#","$","%","^","&","*","(",")","?","`","~","-","+","=", ",", ".", "/", "<", ">"};
         String[] numbersCharacter = {"1","2","3","4","5","6","7","8","9","0"};
 
+        if (password.length()<7)
+        {return false;}
         char[] splitPass = password.toCharArray();
-
-
-
         for(char n:splitPass )
         {
             if (Character.isUpperCase(n))
-            { upper = true;}
+            {
+                upper = true;
+                break;
+            }
         }
-
+        if (!upper)
+        {return false;}
         for(char n:splitPass )
         {
             if (Character.isLowerCase(n))
-            { lower = true;}
+            {
+                lower = true;
+                 break;
+            }
         }
+        if (!lower)
+        {return false;}
         for (String n: specialCharacters)
         {
             if (password.contains(n))
             {special = true;
-            break;}
+             break;}
         }
-
+        if (!special)
+        {return false;}
+        for (String n: numbersCharacter)
+        {
+            if (password.contains(n))
+            {
+                number = true;
+                break;
+            }
+        }
+        if (upper && lower && special && number)
+        {
+            return true;
+        }
     return false;
     }
 
