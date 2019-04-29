@@ -1,5 +1,6 @@
 package com.superking75.triptracker_jasonbaldwin;
 
+import android.app.ProgressDialog;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -82,48 +83,39 @@ public class MainActivity extends AppCompatActivity {
                             mBackendlessUser = new BackendlessUser();
                             mBackendlessUser.setEmail(userEmail);
                             mBackendlessUser.setPassword(password);
-                            mBackendlessUser.setProperty("name", name);
+                            mBackendlessUser.setProperty("mName", name);
                             Backendless.UserService.register(mBackendlessUser, new AsyncCallback<BackendlessUser>() {
                                 @Override
                                 public void handleResponse(BackendlessUser response) {
                                     Log.i(TAG, "Registration successful for " +
                                             mBackendlessUser.getEmail());
+
                                 }
 
+                                final ProgressDialog pDialog = ProgressDialog.show(MainActivity.this,
+                                        getString(R.string.prosses_load_title),
+                                        getString(R.string.register_wait_dialog),
+                                        true);
                                 @Override
                                 public void handleFault(BackendlessFault fault) {
-                                    Log.i(TAG, "Registration failed: " + fault.getMessage());
-                                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                                    builder.setMessage(fault.getMessage());
-                                    builder.setTitle(R.string.authentication_error_title);
-                                    builder.setPositiveButton(android.R.string.ok, null);
-                                    AlertDialog dialog = builder.create();
-                                    dialog.show();
 
+                                    warnUser(fault.getMessage());
+                                    pDialog.dismiss();
                                 }
                             });
+
                         }
 
                         else
                         {
-                            AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                            builder.setMessage(R.string.invalide_email_signup);
-                            builder.setTitle(R.string.authentication_error_title);
-                            builder.setPositiveButton(android.R.string.ok, null);
-                            AlertDialog dialog = builder.create();
-                            dialog.show();
+                            warnUser(getString(R.string.invalide_email_signup));
                         }
 
                         }
 
                     else
                     {
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                        builder.setMessage(R.string.weak_password_signup);
-                        builder.setTitle(R.string.authentication_error_title);
-                        builder.setPositiveButton(android.R.string.ok, null);
-                        AlertDialog dialog = builder.create();
-                        dialog.show();
+                        warnUser(getString(R.string.weak_password_signup));
                     }
 
 
@@ -131,12 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
                 else
                     {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                    builder.setMessage(R.string.empty_field_signup_error);
-                    builder.setTitle(R.string.authentication_error_title);
-                    builder.setPositiveButton(android.R.string.ok, null);
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
+                        warnUser(getString(R.string.empty_field_signup_error));
                 }
 
             }
@@ -154,19 +141,20 @@ public class MainActivity extends AppCompatActivity {
                             mBackendlessUser = response;
                             Log.i(TAG, "Sucsess");
                         }
-
+                        final ProgressDialog pDialog = ProgressDialog.show(MainActivity.this,
+                                getString(R.string.prosses_load_title),
+                                getString(R.string.login_wait_dialog),
+                                true);
                         @Override
                         public void handleFault(BackendlessFault fault) {
                             Log.i(TAG, "Fail" + fault.getMessage());
+                            warnUser(fault.getMessage());
+                            pDialog.dismiss();
                         }
                     });
+
                 } else {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                    builder.setMessage(R.string.empty_field_login_error);
-                    builder.setTitle(R.string.authentication_error_title);
-                    builder.setPositiveButton(android.R.string.ok, null);
-                    AlertDialog dialog = builder.create();
-                    dialog.show();
+                    warnUser(getString(R.string.empty_field_login_error));
                 }
 
 
@@ -178,13 +166,13 @@ public class MainActivity extends AppCompatActivity {
         public void onClick(View v) {
             String userEmail = mEmailEditText.getText().toString();
             String password = mPasswordEditText.getText().toString();
-            String name = mNameEditText.getText().toString();
+            String mName = mNameEditText.getText().toString();
 
             userEmail = userEmail.trim();
             password = password.trim();
-            name = name.trim();
+            mName = mName.trim();
 
-            if (!userEmail.isEmpty() &&!password.isEmpty() && !name.isEmpty()) {
+            if (!userEmail.isEmpty() &&!password.isEmpty() && !mName.isEmpty()) {
 
                 /* register the user in Backendless *//*
 
@@ -207,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
         String[] specialCharacters = {"!", "2","#","$","%","^","&","*","(",")","?","`","~","-","+","=", ",", ".", "/", "<", ">"};
         String[] numbersCharacter = {"1","2","3","4","5","6","7","8","9","0"};
 
-        if (password.length()<7)
+        if (password.length()<6)
         {return false;}
         char[] splitPass = password.toCharArray();
         for(char n:splitPass )
@@ -251,6 +239,17 @@ public class MainActivity extends AppCompatActivity {
             return true;
         }
     return false;
+    }
+
+    public void warnUser(String alertDialog)
+    {
+        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+        builder.setMessage(alertDialog);
+        builder.setTitle(R.string.authentication_error_title);
+        builder.setPositiveButton(android.R.string.ok, null);
+        AlertDialog dialog = builder.create();
+        dialog.show();
+
     }
 
 }
