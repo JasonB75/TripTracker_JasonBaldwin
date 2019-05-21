@@ -1,6 +1,7 @@
 package com.superking75.triptracker_jasonbaldwin;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -89,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
                                 public void handleResponse(BackendlessUser response) {
                                     Log.i(TAG, "Registration successful for " +
                                             mBackendlessUser.getEmail());
+                                    Intent intent = new Intent(MainActivity.this, MainActivity.class);
+                                    startActivity(intent);
 
                                 }
 
@@ -140,6 +143,9 @@ public class MainActivity extends AppCompatActivity {
                         public void handleResponse(BackendlessUser response) {
                             mBackendlessUser = response;
                             Log.i(TAG, "Sucsess");
+                            Intent intent = new Intent(MainActivity.this, TripListActivity.class);
+                            startActivity(intent);
+
                         }
                         final ProgressDialog pDialog = ProgressDialog.show(MainActivity.this,
                                 getString(R.string.prosses_load_title),

@@ -213,8 +213,7 @@ public class TripFragment extends Fragment {
                         Log.i(TAG, "Server reported an error on logout:" + backendlessFault.getMessage());
                     }
                 });
-                Intent intent = new Intent(getActivity(), LoginActivity.class);
-                startActivity(intent);
+
                 return true;
             case R.id.action_settings:
                 //place holder for settings screen
@@ -278,13 +277,25 @@ public class TripFragment extends Fragment {
         desc = desc.trim();
 
         // If user doesn't enter a trip name, then give an error message.
-        if (name.isEmpty()) {
+        // save on a new thread and wait for the save to finish
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Backendless.Data.of(Trip.class).save(mTrip);
+            }
+        });
+        thread.start();
+        try {
+            thread.join();
+        } catch (InterruptedException e) {
+            Log.e(TAG, "Saving trip failed: " + e.getMessage());
             AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-            builder.setMessage(R.string.trip_error_message);
+            builder.setMessage(e.getMessage());
             builder.setTitle(R.string.trip_error_title);
             builder.setPositiveButton(android.R.string.ok, null);
             AlertDialog dialog = builder.create();
             dialog.show();
+        }
         }
 		else {
 			menuItem.setActionView(new ProgressBar(getActivity()));
